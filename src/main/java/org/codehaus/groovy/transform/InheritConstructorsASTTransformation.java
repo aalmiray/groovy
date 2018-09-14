@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static org.apache.groovy.ast.tools.AnnotatedNodeUtils.markAsGenerated;
 import static org.codehaus.groovy.ast.ClassHelper.make;
 import static org.codehaus.groovy.ast.tools.GeneralUtils.args;
 import static org.codehaus.groovy.ast.tools.GeneralUtils.block;
@@ -98,6 +99,7 @@ public class InheritConstructorsASTTransformation extends AbstractASTTransformat
         List<Expression> theArgs = buildParams(origParams, params, genericsSpec, copyParameterAnnotations);
         if (isExisting(classNode, params)) return;
         ConstructorNode added = classNode.addConstructor(consNode.getModifiers(), params, consNode.getExceptions(), block(ctorSuperS(args(theArgs))));
+        markAsGenerated(classNode, added);
         if (copyConstructorAnnotations) {
             added.addAnnotations(copyAnnotatedNodeAnnotations(consNode, MY_TYPE_NAME));
         }

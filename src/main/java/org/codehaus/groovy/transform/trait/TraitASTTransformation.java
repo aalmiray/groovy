@@ -68,6 +68,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import static org.apache.groovy.ast.tools.AnnotatedNodeUtils.markAsGenerated;
 import static org.codehaus.groovy.ast.tools.GeneralUtils.returnS;
 import static org.codehaus.groovy.transform.trait.SuperCallTraitTransformer.UNRESOLVED_HELPER_CLASS;
 
@@ -249,8 +250,9 @@ public class TraitASTTransformation extends AbstractASTTransformation implements
 
         // copy annotations
         copyClassAnnotations(cNode, helper);
+        markAsGenerated(cNode, helper);
 
-        fields = new ArrayList<FieldNode>(cNode.getFields()); // reuse the full list of fields
+            fields = new ArrayList<FieldNode>(cNode.getFields()); // reuse the full list of fields
         for (FieldNode field : fields) {
             cNode.removeField(field.getName());
         }

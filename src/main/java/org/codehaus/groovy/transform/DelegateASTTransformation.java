@@ -46,6 +46,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static org.apache.groovy.ast.tools.AnnotatedNodeUtils.markAsGenerated;
 import static org.codehaus.groovy.ast.ClassHelper.make;
 import static org.codehaus.groovy.ast.tools.GeneralUtils.assignS;
 import static org.codehaus.groovy.ast.tools.GeneralUtils.callThisX;
@@ -166,12 +167,12 @@ public class DelegateASTTransformation extends AbstractASTTransformation {
             if (delegate.type.isArray()) {
                 boolean skipLength = delegate.excludes != null && (delegate.excludes.contains("length") || delegate.excludes.contains("getLength"));
                 if (!skipLength) {
-                    delegate.owner.addMethod("getLength",
+                    markAsGenerated(delegate.owner, delegate.owner.addMethod("getLength",
                             ACC_PUBLIC,
                             ClassHelper.int_TYPE,
                             Parameter.EMPTY_ARRAY,
                             null,
-                            returnS(propX(delegate.getOp, "length")));
+                            returnS(propX(delegate.getOp, "length"))));
                 }
             }
 
@@ -200,12 +201,12 @@ public class DelegateASTTransformation extends AbstractASTTransformation {
         if ((prop.getModifiers() & ACC_FINAL) == 0
                 && delegate.owner.getSetterMethod(setterName) == null && delegate.owner.getProperty(name) == null
                 && !shouldSkipPropertyMethod(name, setterName, delegate.excludes, delegate.includes, allNames)) {
-            delegate.owner.addMethod(setterName,
+            markAsGenerated(delegate.owner, delegate.owner.addMethod(setterName,
                     ACC_PUBLIC,
                     ClassHelper.VOID_TYPE,
                     params(new Parameter(GenericsUtils.nonGeneric(prop.getType()), "value")),
                     null,
-                    assignS(propX(delegate.getOp, name), varX("value"))
+                    assignS(propX(delegate.getOp, name), varX("value")))
             );
         }
     }
@@ -232,12 +233,12 @@ public class DelegateASTTransformation extends AbstractASTTransformation {
             if ((prefix.equals("get") && willHaveGetAccessor && !ownerWillHaveGetAccessor.get()
                     || prefix.equals("is") && willHaveIsAccessor && !ownerWillHaveIsAccessor.get())
                     && !shouldSkipPropertyMethod(name, getterName, delegate.excludes, delegate.includes, allNames)) {
-                delegate.owner.addMethod(getterName,
+                markAsGenerated(delegate.owner, delegate.owner.addMethod(getterName,
                         ACC_PUBLIC,
                         GenericsUtils.nonGeneric(prop.getType()),
                         Parameter.EMPTY_ARRAY,
                         null,
-                        returnS(propX(delegate.getOp, name)));
+                        returnS(propX(delegate.getOp, name))));
             }
         }
     }
@@ -333,6 +334,7 @@ public class DelegateASTTransformation extends AbstractASTTransformation {
                     newParams,
                     candidate.getExceptions(),
                     stmt(mce));
+            markAsGenerated(delegate.owner, newMethod);
             newMethod.setGenericsTypes(candidate.getGenericsTypes());
 
             if (memberHasValue(delegate.annotation, MEMBER_METHOD_ANNOTATIONS, true)) {

@@ -51,6 +51,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.apache.groovy.ast.tools.AnnotatedNodeUtils.markAsGenerated;
 import static org.apache.groovy.ast.tools.ClassNodeUtils.hasExplicitConstructor;
 import static org.apache.groovy.ast.tools.ImmutablePropertyUtils.builtinOrMarkedImmutableClass;
 import static org.apache.groovy.ast.tools.ImmutablePropertyUtils.createErrorMessage;
@@ -313,12 +314,12 @@ public class ImmutableASTTransformation extends AbstractASTTransformation implem
 
         final ClassNode clonedNode = cNode.getPlainNodeReference();
 
-        cNode.addMethod(COPY_WITH_METHOD,
+        markAsGenerated(cNode, cNode.addMethod(COPY_WITH_METHOD,
                 ACC_PUBLIC | ACC_FINAL,
                 clonedNode,
                 params(new Parameter(new ClassNode(Map.class), "map")),
                 null,
-                body);
+                body));
     }
 
     /**

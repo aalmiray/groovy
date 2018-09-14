@@ -38,6 +38,7 @@ import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.util.List;
 
+import static org.apache.groovy.ast.tools.AnnotatedNodeUtils.markAsGenerated;
 import static org.codehaus.groovy.ast.ClassHelper.make;
 import static org.codehaus.groovy.ast.tools.GeneralUtils.assignS;
 import static org.codehaus.groovy.ast.tools.GeneralUtils.callX;
@@ -96,7 +97,7 @@ public class ExternalizeMethodsASTTransformation extends AbstractASTTransformati
             body.addStatement(stmt(writeObject));
         }
         ClassNode[] exceptions = {make(IOException.class)};
-        cNode.addMethod("writeExternal", ACC_PUBLIC, ClassHelper.VOID_TYPE, params(out), exceptions, body);
+        markAsGenerated(cNode, cNode.addMethod("writeExternal", ACC_PUBLIC, ClassHelper.VOID_TYPE, params(out), exceptions, body));
     }
 
     private static void createReadExternal(ClassNode cNode, List<String> excludes, List<FieldNode> list) {
@@ -110,7 +111,7 @@ public class ExternalizeMethodsASTTransformation extends AbstractASTTransformati
             readObject.setImplicitThis(false);
             body.addStatement(assignS(varX(fNode), suffix.equals("Object") ? castX(GenericsUtils.nonGeneric(fNode.getType()), readObject) : readObject));
         }
-        cNode.addMethod("readExternal", ACC_PUBLIC, ClassHelper.VOID_TYPE, params(oin), ClassNode.EMPTY_ARRAY, body);
+        markAsGenerated(cNode, cNode.addMethod("readExternal", ACC_PUBLIC, ClassHelper.VOID_TYPE, params(oin), ClassNode.EMPTY_ARRAY, body));
     }
 
     private static String suffixForField(FieldNode fNode) {

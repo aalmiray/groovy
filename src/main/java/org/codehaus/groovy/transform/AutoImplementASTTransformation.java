@@ -43,6 +43,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.apache.groovy.ast.tools.AnnotatedNodeUtils.markAsGenerated;
 import static org.apache.groovy.ast.tools.MethodNodeUtils.methodDescriptorWithoutReturnType;
 import static org.codehaus.groovy.antlr.AntlrParserPlugin.getDefaultValueForPrimitive;
 import static org.codehaus.groovy.ast.ClassHelper.make;
@@ -93,9 +94,9 @@ public class AutoImplementASTTransformation extends AbstractASTTransformation {
     private void createMethods(ClassNode cNode, ClassNode exception, String message, ClosureExpression code) {
         for (MethodNode candidate : getAllCorrectedMethodsMap(cNode).values()) {
             if (candidate.isAbstract()) {
-                cNode.addMethod(candidate.getName(), Opcodes.ACC_PUBLIC, candidate.getReturnType(),
+                markAsGenerated(cNode, cNode.addMethod(candidate.getName(), Opcodes.ACC_PUBLIC, candidate.getReturnType(),
                         candidate.getParameters(), candidate.getExceptions(),
-                        methodBody(exception, message, code, candidate.getReturnType()));
+                        methodBody(exception, message, code, candidate.getReturnType())));
             }
         }
     }

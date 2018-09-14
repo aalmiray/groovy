@@ -40,6 +40,7 @@ import org.codehaus.groovy.control.SourceUnit;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.apache.groovy.ast.tools.AnnotatedNodeUtils.markAsGenerated;
 import static org.codehaus.groovy.ast.ClassHelper.make;
 import static org.codehaus.groovy.ast.tools.GeneralUtils.args;
 import static org.codehaus.groovy.ast.tools.GeneralUtils.callThisX;
@@ -85,7 +86,7 @@ public class MemoizedASTTransformation extends AbstractASTTransformation {
 
             ClassNode ownerClassNode = methodNode.getDeclaringClass();
             MethodNode delegatingMethod = buildDelegatingMethod(methodNode, ownerClassNode);
-            ownerClassNode.addMethod(delegatingMethod);
+            ownerClassNode.addMethod(markAsGenerated(ownerClassNode, delegatingMethod));
 
             int modifiers = FieldNode.ACC_PRIVATE | FieldNode.ACC_FINAL;
             if (methodNode.isStatic()) {
